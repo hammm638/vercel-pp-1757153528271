@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Menu - Login</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: monospace;
+      background: #0a0a0a;
+      color: #ff3333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px red;
+      width: 320px;
+      text-align: center;
+    }
+    h2 { margin-bottom: 15px; }
+    input {
+      width: 90%;
+      padding: 8px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+      text-align: center;
+    }
+    button {
+      padding: 10px;
+      width: 95%;
+      border: none;
+      border-radius: 5px;
+      background: red;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 6px 0;
+    }
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div class="card" id="loginBox">
+    <h2>🔐 LOGIN</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">MASUK</button>
+  </div>
+
+  <!-- MENU -->
+  <div class="card hidden" id="menuBox">
+    <h2>⚡ MENU BUG</h2>
+    <input type="text" id="target" placeholder="Masukkan Target (62...)">
+    <button id="btnBlank" onclick="sendBug('BLANK CLIK')">🐞 BLANK CLIK</button>
+    <button id="btnDelay" onclick="sendBug('DELAY INVISIBLE')">👻 DELAY INVISIBLE</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    let lastBugTime = 0;
+    const cooldown = 300; // 5 menit dalam detik
+    let interval = null;
+
+    function login() {
+      let u = document.getElementById("username").value;
+      let p = document.getElementById("password").value;
+      if (u === "zaky" && p === "irhkam") {
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("menuBox").classList.remove("hidden");
+      } else {
+        alert("❌ Username / Password salah!");
+      }
+    }
+
+    function formatTime(seconds) {
+      let m = Math.floor(seconds / 60);
+      let s = seconds % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function sendBug(type) {
+      let target = document.getElementById("target").value;
+      if (!target) return alert("⚠️ Isi target dulu!");
+
+      let now = Date.now() / 1000;
+      let status = document.getElementById("status");
+
+      if (now - lastBugTime < cooldown) {
+        return alert("⛔ Tunggu sampai cooldown selesai!");
+      }
+
+      lastBugTime = now;
+      let sisa = cooldown;
+
+      document.getElementById("btnBlank").disabled = true;
+      document.getElementById("btnDelay").disabled = true;
+
+      status.innerText = `🚀 BUG ${type} dikirim ke ${target} | Jeda ${formatTime(sisa)} !!!`;
+
+      clearInterval(interval);
+      interval = setInterval(() => {
+        sisa--;
+        if (sisa > 0) {
+          status.innerText = `🚀 BUG ${type} dikirim ke ${target} | Jeda ${formatTime(sisa)} !!!`;
+        } else {
+          clearInterval(interval);
+          status.innerText = `✅ BUG ${type} siap digunakan lagi.`;
+          document.getElementById("btnBlank").disabled = false;
+          document.getElementById("btnDelay").disabled = false;
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
